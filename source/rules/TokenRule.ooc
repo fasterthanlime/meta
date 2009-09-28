@@ -1,7 +1,7 @@
 import frontend/SourceReader
-import MetaNode
+import ../Lexer
 
-TokenMetaNode: class extends MetaNode {
+TokenRule: class extends MetaNode {
 	
 	string : String
 	

@@ -16,7 +16,9 @@ Lexer: class {
 	rules: ArrayList<Rule>
 	
 	init: func {
-		rules := ArrayList<Rule> new()
+		
+		rules = ArrayList<Rule> new()
+		
 	}
 	
 	parse: func (path: String) {
@@ -24,10 +26,10 @@ Lexer: class {
 		sReader := SourceReader getReaderFromPath(path)
 		tokens := Tokenizer new() parse(sReader)
 		
-		"Got tokens: " println()
 		for(token: Token in tokens) {
-			printf("%s ", token toString())
+			printf("%s ", token toString(sReader))
 		}
+		println()
 		
 		for(rule in rules) {
 			
