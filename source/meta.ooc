@@ -1,8 +1,11 @@
 // ooc imports
 import structs/Array
 
+// rock imports
+import frontend/TokenType
+
 // meta imports
-import Lexer
+import Lexer, rules/[TokenRule, SequenceRule]
 
 /**
  * Entry point
@@ -52,6 +55,18 @@ Main: class {
 makeLexer: func -> Lexer {
 	
 	lexer := Lexer new()
+	
+	// access
+	access := TokenRule new("access", TokenType NAME)
+	lexer rules add(access)
+	
+	// assignment
+	assignment := SequenceRule new("assignment")
+	assignment addRule(access)
+	assignment addRule(TokenRule new("=", TokenType ASSIGN))
+	assignment addRule(access)
+	lexer rules add(assignment)
+	
 	return lexer
 	
 }

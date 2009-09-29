@@ -1,7 +1,10 @@
 // ooc imports
-import frontend/SourceReader
+import structs/ArrayList
 
-// meta2 imports
+// rock imports
+import frontend/[ListReader, SourceReader]
+
+// meta imports
 import Node
 
 /**
@@ -10,10 +13,16 @@ import Node
 Rule: abstract class {
 	
 	name: String
-	parent: Rule
+	leafs: ArrayList<Rule>
 	
-	init: func(=name, =parent) {}
+	init: func(=name) {}
 	
-	parse: abstract func (sr: SourceReader) -> Node
+	addLeaf: func (leaf: Rule) {
+		if(!leafs) leafs = ArrayList<Rule> new()
+		leafs add(leaf)
+		printf("Rule %s just got leaf %s\n", name, leaf name)
+	}
+	
+	apply: abstract func (reader: ListReader, sReader: SourceReader) -> Node
 	
 }

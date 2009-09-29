@@ -1,4 +1,4 @@
-TESTFILE=source/Lexer.ooc
+TESTFILE=samples/assign.ooc
 GDBCOMMANDS_PATH=/tmp/gdbcommands
 .PHONY:all clean mrproper
 
@@ -6,13 +6,13 @@ all:
 	ooc meta -sourcepath=source/:../rock/source/ -g ${OOC_FLAGS}
 
 test:
-	make all && ./meta ${TESTFILE}
+	@./meta ${TESTFILE}
 
 debug:
-	echo run ${TESTFILE} >> ${GDBCOMMANDS_PATH} && gdb ./meta -command=${GDBCOMMANDS_PATH} && rm ${GDBCOMMANDS_PATH}
+	@echo run ${TESTFILE} >> ${GDBCOMMANDS_PATH} && gdb ./meta -command=${GDBCOMMANDS_PATH} && rm ${GDBCOMMANDS_PATH}
 
 clean:
-	rm -rf ooc_tmp/
+	@rm -rf ooc_tmp/
 
 mrproper: clean
-	rm -rf ./meta
+	@rm -rf ./meta

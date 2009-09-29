@@ -1,3 +1,5 @@
+// rock imports
+import frontend/Token
 
 // meta2 imports
 import Rule, Location
@@ -8,8 +10,8 @@ import Rule, Location
 Node: class {
 
 	type: Rule
-	location: Location
+	startToken: Token
 	
-	init: func (=type, =location) {}
+	init: func (=type, =startToken) {}
 
 }
