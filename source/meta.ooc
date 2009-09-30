@@ -58,14 +58,18 @@ makeLexer: func -> Lexer {
 	
 	// access
 	access := TokenRule new("access", TokenType NAME)
-	lexer rules add(access)
+	lexer addRule(access)
 	
 	// assignment
 	assignment := SequenceRule new("assignment")
 	assignment addRule(access)
 	assignment addRule(TokenRule new("=", TokenType ASSIGN))
 	assignment addRule(access)
-	lexer rules add(assignment)
+	lexer addRule(assignment)
+	
+	// linesep
+	linesep := TokenRule new("linesep", TokenType LINESEP)
+	lexer addRule(linesep)
 	
 	return lexer
 	
