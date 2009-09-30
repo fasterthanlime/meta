@@ -22,5 +22,7 @@ TokenRule: class extends Rule {
 		return null
 		
 	}
+	
+	isRoot: func -> Bool { true }
 
 }

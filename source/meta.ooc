@@ -5,7 +5,7 @@ import structs/Array
 import frontend/TokenType
 
 // meta imports
-import Lexer, rules/[TokenRule, SequenceRule]
+import Parser, rules/[TokenRule, SequenceRule, GroupRule]
 
 /**
  * Entry point
@@ -24,12 +24,12 @@ main: func(args: Array<String>) {
 Main: class {
 
 	args: Array<String>
-	lexer: Lexer
+	parser: Parser
 
 	// FIXME '=args' should work. But it doesn't.
 	init: func(args: Array<String>) {
 		this args = args
-		lexer = makeLexer()
+		parser = makeParser()
 	}
 
 	run: func {
@@ -40,7 +40,7 @@ Main: class {
 		while(iter hasNext()) {
 			arg := iter next()
 			printf("Parsing %s\n", arg)
-			lexer parse(arg)
+			parser parse(arg)
 		}
 		
 	}
@@ -48,30 +48,43 @@ Main: class {
 }
 
 /**
- * This is a test lexer-building function to help test/evolve the design.
- * It manually adds rules to the lexer instead of reading them from a 
+ * This is a test parser-building function to help test/evolve the design.
+ * It manually adds rules to the parser instead of reading them from a 
  * grammar file.
  */
-makeLexer: func -> Lexer {
+makeParser: func -> Parser {
 	
-	lexer := Lexer new()
+	parser := Parser new()
+	
+	// expression
+	expression := GroupRule new("expression")
+	parser addRule(expression)
 	
 	// access
-	access := TokenRule new("access", TokenType NAME)
-	lexer addRule(access)
+	access := GroupRule new("access")
+	parser addRule(access)
+	expression addRule(access)
+	
+	// varAccess
+	varAccess := TokenRule new("varAccess", TokenType NAME)
+	parser addRule(varAccess)
+	access addRule(varAccess)
 	
 	// assignment
 	assignment := SequenceRule new("assignment")
 	assignment addRule(access)
 	assignment addRule(TokenRule new("=", TokenType ASSIGN))
 	assignment addRule(access)
-	lexer addRule(assignment)
+	parser addRule(assignment)
+	access addRule(assignment)
 	
 	// linesep
 	linesep := TokenRule new("linesep", TokenType LINESEP)
-	lexer addRule(linesep)
+	parser addRule(linesep)
 	
-	return lexer
+	parser build()
+	
+	return parser
 	
 }
 

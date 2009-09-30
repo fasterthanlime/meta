@@ -28,31 +28,41 @@ SequenceRule: class extends Rule {
 		
 		if(!rules || rules isEmpty()) return firstNode
 		
+		printf(" [%s] being sub-applied.\n", name)
+		
 		node : Node = null
 		i := 0
 		for(rule: Rule in rules) {
 			i += 1
-			if(i == 1) continue // skip the first one, we're subApplying
+			if(i == 1) {
+				printf(" [%s] (skipping '%s')\n", name, rule name)
+				continue // skip the first one, we're subApplying
+			}
 			node = rule apply(reader, sReader)
 			if(node) {
-				//printf("Matched sub-rule #%i '%s', going forward =)\n", i, rule name)
+				printf(" [%s] got element '%s'!\n", name, rule name)
 			} else {
-				//printf("Broke at sub-rule #%i <'%s', abandoning...\n", i, rule name)
-				break
+				printf(" [%s] element '%s' broke it :/\n", name, rule name)
+				break // broke the sequence :/
 			}
 		}
 
-		return null
+		return node
 		
 	}
 	
-	addRule: func (rule: Rule) {
-		if(rules == null) rules = ArrayList<Rule> new()
-		rules add(rule)
-		if(rules size() == 1) {
-			printf("// First rule added is %s, adding us as a leaf to it\n", rule name)
-			rule addLeaf(this)
+	build: func {
+		printf("// Building seqrule '%s'\n", name)
+		if(rules && rules size() > 0) {
+			parent := rules get(0)
+			printf("// Adding as leaf to '%s'\n", parent name)
+			parent addLeaf(this)
 		}
+	}
+	
+	addRule: func (rule: Rule) {
+		if(!rules) rules = ArrayList<Rule> new()
+		rules add(rule)
 	}
 
 }
