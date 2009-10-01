@@ -62,25 +62,55 @@ makeParser: func -> Parser {
 	
 	// access
 	access := GroupRule new("access")
+	//access root = true
 	parser addRule(access)
-	expression addRule(access)
-	
-	// varAccess
-	varAccess := TokenRule new("varAccess", TokenType NAME)
-	parser addRule(varAccess)
-	access addRule(varAccess)
 	
 	// assignment
 	assignment := SequenceRule new("assignment")
 	assignment addRule(access)
 	assignment addRule(TokenRule new("=", TokenType ASSIGN))
-	assignment addRule(access)
+	assignment addRule(expression)
 	parser addRule(assignment)
-	access addRule(assignment)
+	
+	// add
+	add := SequenceRule new("add")
+	add addRule(expression)
+	add addRule(TokenRule new("+", TokenType PLUS))
+	add addRule(expression)
+	//add root = true
+	parser addRule(add)
+	
+	// varAccess
+	varAccess := TokenRule new("varAccess", TokenType NAME)
+	varAccess root = true
+	parser addRule(varAccess)
+	
+	openParen := TokenRule new("(", TokenType OPEN_PAREN)
+	parser addRule(openParen)
+	
+	closParen := TokenRule new(")", TokenType CLOS_PAREN)
+	parser addRule(closParen)
+	
+	// paren
+	paren := SequenceRule new("paren")
+	paren addRule(openParen)
+	paren addRule(expression)
+	paren addRule(closParen)
+	//paren root = true
+	parser addRule(paren)
 	
 	// linesep
 	linesep := TokenRule new("linesep", TokenType LINESEP)
 	parser addRule(linesep)
+	
+	// expression children
+	expression addRule(paren)
+	expression addRule(access)
+	expression addRule(add)
+	
+	// access children
+	access addRule(varAccess)
+	access addRule(assignment)
 	
 	parser build()
 	

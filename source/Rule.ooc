@@ -14,12 +14,15 @@ Rule: abstract class {
 	
 	name: String
 	leafs: ArrayList<Rule>
+	//root := false
+	root := true
 	
 	init: func(=name) {}
 	
 	addLeaf: func (leaf: Rule) {
 		if(!leafs) leafs = ArrayList<Rule> new()
 		leafs add(leaf)
+		leaf root = false
 		printf("// Rule <%s> just got leaf %s\n", name, leaf name)
 	}
 	
@@ -51,6 +54,6 @@ Rule: abstract class {
 	 * Root nodes are nodes the Lexer should begin with when parsing
 	 * GroupRules or SequenceRules, for example, aren't root nodes
 	 */
-	isRoot: func -> Bool { false }
+	isRoot: func -> Bool { root }
 	
 }

@@ -5,7 +5,7 @@ import structs/ArrayList
 import frontend/[TokenType, ListReader, SourceReader, Token]
 
 // meta imports
-import ../[Rule, Node]
+import ../[Rule, Node], TokenRule
 
 SequenceRule: class extends Rule {
 	
@@ -24,7 +24,7 @@ SequenceRule: class extends Rule {
 		
 	}
 	
-	subApplyImpl: func (reader: ListReader, sReader: SourceReader, firstNode: Node) -> Node {
+	subApplyImpl: func (reader: ListReader<Token>, sReader: SourceReader, firstNode: Node) -> Node {
 		
 		if(!rules || rules isEmpty()) return firstNode
 		
@@ -35,14 +35,14 @@ SequenceRule: class extends Rule {
 		for(rule: Rule in rules) {
 			i += 1
 			if(i == 1) {
-				printf(" [%s] (skipping '%s')\n", name, rule name)
+				//printf(" [%s] (skipping '%s')\n", name, rule name)
 				continue // skip the first one, we're subApplying
 			}
 			node = rule apply(reader, sReader)
 			if(node) {
-				printf(" [%s] got element '%s'!\n", name, rule name)
+				printf(" [%s] \tgot element '%s'!\n", name, rule name)
 			} else {
-				printf(" [%s] element '%s' broke it :/\n", name, rule name)
+				printf(" [%s] \tbroke on '%s' (expected rule '%s')\n", name, reader peek() toString(sReader), rule name)
 				break // broke the sequence :/
 			}
 		}
@@ -64,5 +64,9 @@ SequenceRule: class extends Rule {
 		if(!rules) rules = ArrayList<Rule> new()
 		rules add(rule)
 	}
+	
+	//isRoot: func -> Bool {
+		//return (rules && rules size() > 0 && rules get(0) isRoot())
+	//}
 
 }

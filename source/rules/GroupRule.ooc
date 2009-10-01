@@ -5,7 +5,7 @@ import structs/ArrayList
 import frontend/[TokenType, ListReader, SourceReader, Token]
 
 // meta imports
-import ../[Rule, Node]
+import ../[Rule, Node], TokenRule
 
 GroupRule: class extends Rule {
 	
@@ -19,7 +19,7 @@ GroupRule: class extends Rule {
 		
 		node = null : Node
 		
-		printf(" [%s] group being applied\n", name)
+		printf(" [%s] {\n", name)
 		
 		rule: Rule
 		mark := reader mark()
@@ -31,25 +31,24 @@ GroupRule: class extends Rule {
 			if(!rule isRoot()) continue
 			
 			token := reader peek()
-			printf(" [%s] trying rule '%s'\n", name, rule name)
+			//printf(" [%s] trying rule '%s'\n", name, rule name)
 			node = rule apply(reader, sReader)
 			if(node) {
-				printf(" [%s] matched '%s'!\n", name, rule name)
+				printf(" [%s] \tmatched '%s'!\n", name, rule name)
 				break // if we matched, stop there - we're happy
 			}
 			reader seek(mark) // didn't match? try again at the same pos.
 			
 		}
 		
-		printf(" [%s] returning '%s'\n", name, node ? node type name : "null")
+		printf(" [%s] }\n", name)
+		//printf(" [%s] returning '%s'\n", name, node ? node type name : "null")
 		return node
 		
 	}
 	
 	subApplyImpl: func (reader: ListReader, sReader: SourceReader, firstNode: Node) -> Node {
-		
 		return null
-		
 	}
 	
 	addRule: func (rule: Rule) {
@@ -61,9 +60,22 @@ GroupRule: class extends Rule {
 		if(!leafs) leafs = ArrayList<Rule> new()
 		leafs add(leaf)
 		printf("// Trying to add leaf '%s' to grouprule '%s', adding to all children rules\n", leaf name, name)
+		leaf root = false
 		if(rules) for(rule: Rule in rules) {
 			rule addLeaf(leaf)
 		}
 	}
+	
+	/*
+	isRoot: func -> Bool {
+		if(!rules || rules isEmpty()) return false
+		
+		for(rule: Rule in rules) {
+			//if(!rule isRoot()) return false
+			if(rule class != TokenRule) return false
+		}
+		return true		
+	}
+	*/
 
 }

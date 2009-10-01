@@ -5,7 +5,7 @@ import structs/[List, ArrayList]
 import frontend/[SourceReader, Lexer, Token, ListReader]
 
 // meta imports
-import Rule, Node, rules/GroupRule
+import Rule, Node, rules/GroupRule, io/TabbedWriter
 
 /**
  * Applies rules to a list of tokens in order to build an AST
@@ -14,6 +14,7 @@ import Rule, Node, rules/GroupRule
 Parser: class {
 	
 	rules: ArrayList<Rule>
+	tw := static TabbedWriter new()
 	
 	init: func {
 		
@@ -74,9 +75,9 @@ Parser: class {
 			// we only want root rules here
 			if(!rule isRoot()) continue
 			
-			token := reader peek()
-			loc := sReader getLocation(token start, token length) toString()
-			printf(" [%s] trying rule '%s' at %s\n", "root", rule name, loc)
+			//token := reader peek()
+			//loc := sReader getLocation(token start, token length) toString()
+			//printf(" [%s] trying rule '%s' at %s\n", "root", rule name, loc)
 			node = rule apply(reader, sReader)
 			if(node) {
 				printf(" [%s] '%s' matched!\n", "root", rule name)
@@ -94,29 +95,48 @@ Parser: class {
 		while(descend) {
 			
 			descend = false // so that if no leaf matched, we stop trying.
-			
 			printf(" [%s] descending from rule '%s'\n", "root", rule name)
-			
-			if(rule leafs) for(leaf: Rule in rule leafs) {
-				token := reader peek()
-				loc := sReader getLocation(token start, token length) toString()
-				printf(" [%s] trying leaf '%s' -> '%s' at %s\n", "root", rule name, leaf name, loc)
-				mark = reader mark()
-				subNode := leaf subApply(reader, sReader, node)
-				if(subNode) {
-					printf(" [%s] leaf '%s' -> '%s' matched!\n", "root", rule name, leaf name)
-					node = subNode
-					rule = leaf 
-					descend = true // keep descending - who knows?
-					break // stop searching leafs
-				}
-				printf(" [%s] No luck for '%s' -> '%s' :/\n", "root", rule name, leaf name)
-				reader seek(mark)
-			}
+			descend = tryLeafs(node&, rule&, reader, sReader)
 			
 		}
 		
 		return node
+		
+	}
+	
+	tryLeafs: func (node: Node@, rule: Rule@, reader: ListReader<Token>, sReader: SourceReader) -> Bool {
+		
+		if(rule leafs) for(leaf: Rule in rule leafs) {
+			//token := reader peek()
+			//loc := sReader getLocation(token start, token length) toString()
+			//printf(" [%s] trying leaf '%s' -> '%s' at %s\n", "root", rule name, leaf name, loc)
+			mark := reader mark()
+			subNode := leaf subApply(reader, sReader, node)
+			if(subNode) {
+				printf(" [%s] leaf '%s' -> '%s' matched!\n", "root", rule name, leaf name)
+				node = subNode
+				rule = leaf 
+				return true // keep descending - who knows? and stop searching leafs
+			}
+			//printf(" [%s] No luck for '%s' -> '%s' :/\n", "root", rule name, leaf name)
+			reader seek(mark)
+		}
+		
+		// FIXME ugly workaround with references.
+		rrule : Rule = rule
+		if(rrule class == GroupRule) {
+			//printf(" [%s] Now trying leaf of sub-rules of group '%s'\n", "root", rule name)
+			rules := rule as GroupRule rules
+			for(subRule: Rule in rules) {
+				//printf(" [%s] Trying leaf of sub-rule '%s'\n", "root", subRule name)
+				if(tryLeafs(node&, subRule&, reader, sReader)) {
+					rule = subRule
+					return true
+				}
+			}
+		}
+		
+		return false
 		
 	}
 	
