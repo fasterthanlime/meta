@@ -1,12 +1,10 @@
 TabbedWriter: class {
 
 	stream: FStream
-	tabLevel: int
-	String tab = "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t"
+	tabLevel: Int
+	tab := "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t"
 
-	TabbedWriter(stream: FStream) {
-		this.stream  = stream 
-	}
+	init: func (=stream) {}
 	
 	/*
 	void close() {
@@ -20,12 +18,11 @@ TabbedWriter: class {
 	}
 	*/
 	
-	app(c: Char) {
-		stream append(c)
-		return this
+	app: func ~chr (c: Char) {
+		stream write(c)
 	}
 	
-	app(s: String) {
+	app: func ~str (s: String) {
 		stream write(s)
 	}
 	
@@ -34,7 +31,7 @@ TabbedWriter: class {
 	}
 	
 	newUntabbedLine: func {
-		stream append('\n')
+		stream write('\n')
 	}
 	
 	nl: func {
@@ -43,11 +40,11 @@ TabbedWriter: class {
 	}
 	
 	tab: func {
-		tabLevel++
+		tabLevel += 1
 	}
 	
 	untab: func {
-		tabLevel--
+		tabLevel -= 1
 	}
 	
 }

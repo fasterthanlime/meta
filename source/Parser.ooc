@@ -14,7 +14,7 @@ import Rule, Node, rules/GroupRule, io/TabbedWriter
 Parser: class {
 	
 	rules: ArrayList<Rule>
-	tw := static TabbedWriter new()
+	tw := static TabbedWriter new(stdout)
 	
 	init: func {
 		

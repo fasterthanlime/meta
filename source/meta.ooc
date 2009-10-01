@@ -96,7 +96,7 @@ makeParser: func -> Parser {
 	paren addRule(openParen)
 	paren addRule(expression)
 	paren addRule(closParen)
-	//paren root = true
+	paren root = true
 	parser addRule(paren)
 	
 	// linesep
